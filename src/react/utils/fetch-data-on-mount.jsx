@@ -9,62 +9,56 @@ import Header from '../components/header';
 import Nav from '../components/nav';
 import PageTitle from '../components/page-title';
 
-const fetchDataOnMount = Component => {
+class FetchDataOnMount extends Component {
 
-	class FetchDataOnMount extends Component {
+	componentDidMount () {
 
-		componentDidMount () {
+		const { fetchData, dispatch, match, location } = this.props;
 
-			const { fetchData, dispatch, match, location } = this.props;
-
-			if (fetchData) fetchData.map(fn => fn(dispatch, match, location));
-
-		};
-
-		render () {
-
-			const { props } = this;
-
-			const error = this.store && this.store.getState().error;
-
-			return (
-				<div className="page-container">
-
-					<Helmet
-						defaultTitle='TheatreBase'
-						titleTemplate='%s | TheatreBase'
-						title={props.documentTitle()}
-					/>
-
-					<Header />
-
-					<Nav />
-
-					<main className="main-content">
-
-						{
-							error && error.exists ?
-								<ErrorMessage errorText={error.message} /> :
-								<Component {...props} />
-						}
-
-					</main>
-
-					<Footer />
-
-				</div>
-			);
-
-		};
+		if (fetchData) fetchData.map(fn => fn(dispatch, match, location));
 
 	};
 
-	FetchDataOnMount.propTypes = { error: PropTypes.object.isRequired };
+	render () {
 
-	const mapStateToProps = error => (error);
+		const { props } = this;
 
-	return connect(mapStateToProps)(FetchDataOnMount);
+		const error = this.store && this.store.getState().error;
+
+		return (
+			<div className="page-container">
+
+				<Helmet
+					defaultTitle='TheatreBase'
+					titleTemplate='%s | TheatreBase'
+					title={props.documentTitle()}
+				/>
+
+				<Header />
+
+				<Nav />
+
+				<main className="main-content">
+
+					{
+						error && error.exists ?
+							<ErrorMessage errorText={error.message} /> :
+							props.children
+					}
+
+				</main>
+
+				<Footer />
+
+			</div>
+		);
+
+	};
 
 };
 
-export default fetchDataOnMount;
+FetchDataOnMount.propTypes = { error: PropTypes.object.isRequired };
+
+const mapStateToProps = error => (error);
+
+export default connect(mapStateToProps)(FetchDataOnMount);
